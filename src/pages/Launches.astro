@@ -1,0 +1,16 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import { getLatesLaunches } from "../services/Api";
+import CardLaunches from "../components/CardLaunches.astro";
+const launches = await getLatesLaunches();
+---
+
+<Layout title="lanzamientos">
+  <article class="">
+    <h1 class="items-center flex justify-center text-4xl m-8">Lanzamientos de SpaceX</h1>
+    <div class="grid lg:grid-cols-3 lg:gap-4 lg:m-20 sm:grid-cols-1 sm:ga">
+      {launches.map((launche) => <CardLaunches name={launche.name} img={launche.links.patch.small} id={launche.id}/>)}
+    </div>
+  </article>
+</Layout>

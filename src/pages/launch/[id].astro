@@ -1,0 +1,92 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getLatesLaunches, getLaunchesId } from "../../services/Api";
+import { YouTube } from "astro-embed";
+
+const { id } = Astro.params;
+
+let launch = null;
+if (id) {
+  launch = await getLaunchesId({ id });
+}
+
+// console.log(launch);
+
+export async function getStaticPaths() {
+  // Llamar a una API externa
+  // para saber todas las ids que debes generar
+  const launches = await getLatesLaunches();
+
+  // console.log(launches);
+  // launches.map((launch) => console.log(launch));
+
+  return launches.map((launch) => ({ params: { id: launch.id } }));
+}
+
+const a_style = "px-4 py-2 bg-blue-500 text-white rounded mr-2 m-1";
+---
+
+<Layout title=`Lanzamiento ${launch?.name}`>
+  <article class="">
+    <h1 class="text-7xl sm:text-4xl flex justify-center">{launch?.name}</h1>
+    <h2>Flight number</h2>
+
+    <div class="flex justify-center items-center">
+      <!-- Imagen visible en pantallas grandes -->
+      <img
+        class="lg:mb-4 lg:w-1/5 hidden md:block"
+        src=`${launch?.links.patch.small}`
+      />
+      <div class="sm:flex sm:flex-col sm:justify-center sm:items-center">
+        <!-- Imagen visible en pantallas pequeñas y medianas -->
+        <img
+          class="sm:mb-4 sm:w-1/5 sm:justify-center sm:items-center sm:block block md:hidden lg:hidden"
+          src=`${launch?.links.patch.small}`
+        />
+        <p class="text-fuchsia-400 m-8 text-lg md:text-xl lg:text-lg">
+          {launch?.details}
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-center items-center">
+      <a class={a_style} href={launch?.links.article}>Article</a>
+      <a class={a_style} href={launch?.links.wikipedia}>Wikipedia</a>
+      <a class={a_style} href={launch?.links.reddit.campaign}>Campaign</a>
+      <a class={a_style} href={launch?.links.reddit.launch}>Launch</a>
+      <a class={a_style} href={launch?.links.reddit.media}>Media</a>
+    </div>
+
+    <div class="lg:flex lg:justify-center lg:items-center m-3 hidden">
+      <YouTube
+        class="lg:w-1/2 lg:rounded-3xl"
+        id=`${launch?.links.youtube_id}`
+        params="start=1140&end=47"
+        title="Launche"
+        poster=`default`
+      />
+    </div>
+    
+    <div class="justify-center items-center m-5  lg:hidden sm:flex text-c">
+      <svg
+      class="m-1"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="icon icon-tabler icons-tabler-outline icon-tabler-brand-youtube"
+        ><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path
+          d="M2 8a4 4 0 0 1 4 -4h12a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-12a4 4 0 0 1 -4 -4v-8z"
+        ></path><path d="M10 9l5 3l-5 3z"></path></svg
+      >
+      <a class="" href={"https://youtu.be/" + launch?.links.youtube_id}
+        >Youtube</a
+      >
+    </div>
+  </article>
+</Layout>
